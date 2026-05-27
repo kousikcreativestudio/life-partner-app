@@ -2,110 +2,54 @@
 <html>
 <head>
   <title>💖 Love Calculator</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      background: linear-gradient(to right, #ff758c, #ff7eb3);
-      padding: 40px;
-      color: white;
-    }
-
-    .box {
-      background: white;
-      color: black;
-      padding: 20px;
-      border-radius: 10px;
-      display: inline-block;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    input {
-      padding: 10px;
-      margin: 10px;
-      width: 200px;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background: #ff4d6d;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    #history {
-      margin-top: 20px;
-      text-align: left;
-    }
-  </style>
 </head>
 
-<body>
+<body style="text-align:center;font-family:Arial;background:pink">
 
-<h1>💖 Love Match Calculator 💖</h1>
+<h1>💖 Love Match 💖</h1>
 
-<div class="box">
+<input id="name1" placeholder="Your Name"><br><br>
+<input id="name2" placeholder="Love Name"><br><br>
 
-  <input id="yourName" placeholder="Your Name"><br>
-  <input id="loveName" placeholder="Love Name"><br>
+<button onclick="calculate()">Check Love</button>
 
-  <button onclick="calculateLove()">Check Love</button>
-
-  <div id="result"></div>
-
-  <div id="history">
-    <h3>🔍 Search History</h3>
-    <ul id="list"></ul>
-  </div>
-
-</div>
+<h2 id="result"></h2>
 
 <script>
-let historyList = [];
+function calculate() {
 
-function calculateLove() {
+  let n1 = document.getElementById("name1").value.trim();
+  let n2 = document.getElementById("name2").value.trim();
 
-  const name1 = document.getElementById("yourName").value.trim();
-  const name2 = document.getElementById("loveName").value.trim();
-
-  if (!name1 || !name2) {
-    alert("Enter both names!");
+  if (!n1 || !n2) {
+    alert("Enter both names");
     return;
   }
 
-  // 💥 RANDOM % BASED ON NAMES (same names → same result)
-  const combined = name1 + name2;
-  let hash = 0;
+  let total = 0;
+  let str = n1 + n2;
 
-  for (let i = 0; i < combined.length; i++) {
-    hash += combined.charCodeAt(i);
+  for (let i = 0; i < str.length; i++) {
+    total += str.charCodeAt(i);
   }
 
-  const percent = (hash % 51) + 50; // 50% - 100%
+  let percent = (total % 51) + 50;
 
-  // 🎯 Show result
+  // 👤 viewer only sees %
   document.getElementById("result").innerHTML =
-    `${name1} ❤️ ${name2} = ${percent}% 💖`;
+    `❤️ Match: ${percent}%`;
 
-  // 📜 Save history
-  historyList.push(`${name1} ❤️ ${name2} = ${percent}%`);
+  // 🔐 save for admin
+  let data = JSON.parse(localStorage.getItem("loveData")) || [];
 
-  let listHTML = "";
-  historyList.forEach(item => {
-    listHTML += `<li>${item}</li>`;
+  data.push({
+    name1: n1,
+    name2: n2,
+    percent: percent,
+    time: new Date().toLocaleString()
   });
 
-  document.getElementById("list").innerHTML = listHTML;
+  localStorage.setItem("loveData", JSON.stringify(data));
 }
 </script>
 
