@@ -43,17 +43,10 @@
 
 <br>
 
-<select id="gender">
-  <option value="male">Male</option>
-  <option value="female">Female</option>
-</select>
-
-<br>
-
 <select id="color">
-  <option value="red">Red</option>
-  <option value="blue">Blue</option>
-  <option value="pink">Pink</option>
+  <option value="red">Red ❤️</option>
+  <option value="blue">Blue 💙</option>
+  <option value="pink">Pink 💖</option>
 </select>
 
 <br>
@@ -63,12 +56,13 @@
 <div id="result"></div>
 
 <script>
+  // 👇 Your database (you can later connect Firebase)
   const maleNames = ["Arjun", "Sai", "Ramesh", "Akash", "Kousik"];
   const femaleNames = ["Rama", "Priya", "Sita", "Anjali", "Keerthi"];
 
   function findMatch() {
-    const name = document.getElementById("name").value;
-    const gender = document.getElementById("gender").value;
+    const name = document.getElementById("name").value.trim();
+    const color = document.getElementById("color").value;
 
     if (name === "") {
       alert("Enter your name");
@@ -77,16 +71,30 @@
 
     let matchName;
 
-    if (gender === "male") {
+    // 🔍 Detect gender
+    if (maleNames.map(n => n.toLowerCase()).includes(name.toLowerCase())) {
+      // male → female
       matchName = femaleNames[Math.floor(Math.random() * femaleNames.length)];
-    } else {
+    } 
+    else if (femaleNames.map(n => n.toLowerCase()).includes(name.toLowerCase())) {
+      // female → male
       matchName = maleNames[Math.floor(Math.random() * maleNames.length)];
+    } 
+    else {
+      // unknown → random female (default)
+      matchName = femaleNames[Math.floor(Math.random() * femaleNames.length)];
     }
 
-    const matchPercent = Math.floor(Math.random() * 21) + 80; // 80% - 100%
+    const percent = Math.floor(Math.random() * 21) + 80;
+
+    // 🎨 color effect
+    document.body.style.background =
+      color === "blue" ? "linear-gradient(to right, #89f7fe, #66a6ff)" :
+      color === "pink" ? "linear-gradient(to right, #ff9a9e, #fecfef)" :
+      "linear-gradient(to right, #ff9a9e, #fad0c4)";
 
     document.getElementById("result").innerHTML =
-      name + " ❤️ " + matchName + "<br>Match: " + matchPercent + "%";
+      `${name} ❤️ ${matchName} <br> Match: ${percent}%`;
   }
 </script>
 
