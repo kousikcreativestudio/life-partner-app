@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>❤️ Love Match App</title>
+  <title>💖 Love Calculator</title>
 
   <style>
     body {
       font-family: Arial;
       text-align: center;
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-      padding: 50px;
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      padding: 40px;
+      color: white;
     }
 
-    input, select, button {
+    .box {
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    input {
       padding: 10px;
       margin: 10px;
+      width: 200px;
       font-size: 16px;
     }
 
     button {
+      padding: 10px 20px;
       background: #ff4d6d;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
     }
 
@@ -30,112 +42,71 @@
       font-size: 22px;
       font-weight: bold;
     }
+
+    #history {
+      margin-top: 20px;
+      text-align: left;
+    }
   </style>
 </head>
 
 <body>
 
-<h1>💖 Find Your Life Partner 💖</h1>
+<h1>💖 Love Match Calculator 💖</h1>
 
-<input id="name" placeholder="Enter your name"><br>
+<div class="box">
 
-<select id="color">
-  <option value="red">Red ❤️</option>
-  <option value="blue">Blue 💙</option>
-  <option value="pink">Pink 💖</option>
-</select><br>
+  <input id="yourName" placeholder="Your Name"><br>
+  <input id="loveName" placeholder="Love Name"><br>
 
-<button onclick="findMatch()">Find Now</button>
+  <button onclick="calculateLove()">Check Love</button>
 
-<div id="result"></div>
+  <div id="result"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <div id="history">
+    <h3>🔍 Search History</h3>
+    <ul id="list"></ul>
+  </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDWwfWTbb4b33KrLqxee3mxrM8lcFTycbQ",
-  authDomain: "life-partner-app.firebaseapp.com",
-  projectId: "life-partner-app",
-  storageBucket: "life-partner-app.firebasestorage.app",
-  messagingSenderId: "376129371589",
-  appId: "1:376129371589:web:25e4c2acf9677678c8dfac",
-  measurementId: "G-YCTBK9Z5ZH"
-};
+</div>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<script>
+let historyList = [];
 
-// 🔥 shuffle function
-function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
-}
+function calculateLove() {
 
-window.findMatch = async function () {
+  const name1 = document.getElementById("yourName").value.trim();
+  const name2 = document.getElementById("loveName").value.trim();
 
-  const inputName = document.getElementById("name").value.trim().toLowerCase();
-  const color = document.getElementById("color").value;
-
-  if (!inputName) {
-    alert("Enter your name");
+  if (!name1 || !name2) {
+    alert("Enter both names!");
     return;
   }
 
-  try {
-    const snapshot = await getDocs(collection(db, "names"));
+  // 💥 RANDOM % BASED ON NAMES (same names → same result)
+  const combined = name1 + name2;
+  let hash = 0;
 
-    let maleList = [];
-    let femaleList = [];
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (data.male) maleList.push(data.male.toLowerCase());
-      if (data.female) femaleList.push(data.female.toLowerCase());
-    });
-
-    // shuffle for randomness
-    maleList = shuffle(maleList);
-    femaleList = shuffle(femaleList);
-
-    // remove same name
-    maleList = maleList.filter(n => n !== inputName);
-    femaleList = femaleList.filter(n => n !== inputName);
-
-    let matchName = "";
-
-    // male → female
-    if (maleList.includes(inputName)) {
-      matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
-    }
-    // female → male
-    else if (femaleList.includes(inputName)) {
-      matchName = maleList[Math.floor(Math.random() * maleList.length)];
-    }
-    // unknown → random female
-    else {
-      matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
-    }
-
-    if (!matchName) {
-      matchName = "No match found 😢";
-    }
-
-    const percent = Math.floor(Math.random() * 21) + 80;
-
-    // 🎨 color change
-    document.body.style.background =
-      color === "blue" ? "linear-gradient(to right,#89f7fe,#66a6ff)" :
-      color === "pink" ? "linear-gradient(to right,#ff9a9e,#fecfef)" :
-      "linear-gradient(to right,#ff9a9e,#fad0c4)";
-
-    document.getElementById("result").innerHTML =
-      `${inputName} ❤️ ${matchName} <br> Match: ${percent}%`;
-
-  } catch (e) {
-    document.getElementById("result").innerHTML =
-      "Error: " + e.message;
+  for (let i = 0; i < combined.length; i++) {
+    hash += combined.charCodeAt(i);
   }
-};
+
+  const percent = (hash % 51) + 50; // 50% - 100%
+
+  // 🎯 Show result
+  document.getElementById("result").innerHTML =
+    `${name1} ❤️ ${name2} = ${percent}% 💖`;
+
+  // 📜 Save history
+  historyList.push(`${name1} ❤️ ${name2} = ${percent}%`);
+
+  let listHTML = "";
+  historyList.forEach(item => {
+    listHTML += `<li>${item}</li>`;
+  });
+
+  document.getElementById("list").innerHTML = listHTML;
+}
 </script>
 
 </body>
