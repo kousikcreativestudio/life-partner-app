@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Love Match</title>
+  <title>❤️ Love Match App</title>
 
   <style>
     body {
       font-family: Arial;
       text-align: center;
-      background: #f8c8c8;
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
       padding: 50px;
     }
 
@@ -24,53 +24,64 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
 <body>
 
-<h1>❤️ Find Your Life Partner ❤️</h1>
+<h1>💖 Find Your Life Partner 💖</h1>
 
 <input id="name" placeholder="Enter your name"><br>
 
 <select id="color">
-  <option value="red">Red</option>
-  <option value="blue">Blue</option>
-  <option value="green">Green</option>
+  <option value="red">Red ❤️</option>
+  <option value="blue">Blue 💙</option>
+  <option value="pink">Pink 💖</option>
 </select><br>
 
 <button onclick="findMatch()">Find Now</button>
 
-<h2 id="result"></h2>
+<div id="result"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // ✅ YOUR CONFIG (already correct)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDWwfWTbb4b33KrLqxee3mxrM8lcFTycbQ",
-    authDomain: "life-partner-app.firebaseapp.com",
-    projectId: "life-partner-app",
-    storageBucket: "life-partner-app.firebasestorage.app",
-    messagingSenderId: "376129371589",
-    appId: "1:376129371589:web:25e4c2acf9677678c8dfac",
-    measurementId: "G-YCTBK9Z5ZH"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDWwfWTbb4b33KrLqxee3mxrM8lcFTycbQ",
+  authDomain: "life-partner-app.firebaseapp.com",
+  projectId: "life-partner-app",
+  storageBucket: "life-partner-app.firebasestorage.app",
+  messagingSenderId: "376129371589",
+  appId: "1:376129371589:web:25e4c2acf9677678c8dfac",
+  measurementId: "G-YCTBK9Z5ZH"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  // 🔥 MAIN FUNCTION
-  window.findMatch = async function () {
+// 🔥 shuffle function
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
 
-    const inputName = document.getElementById("name").value.trim().toLowerCase();
+window.findMatch = async function () {
 
-    if (!inputName) {
-      alert("Enter name first");
-      return;
-    }
+  const inputName = document.getElementById("name").value.trim().toLowerCase();
+  const color = document.getElementById("color").value;
 
+  if (!inputName) {
+    alert("Enter your name");
+    return;
+  }
+
+  try {
     const snapshot = await getDocs(collection(db, "names"));
 
     let maleList = [];
@@ -78,31 +89,53 @@
 
     snapshot.forEach(doc => {
       const data = doc.data();
-
       if (data.male) maleList.push(data.male.toLowerCase());
       if (data.female) femaleList.push(data.female.toLowerCase());
     });
 
+    // shuffle for randomness
+    maleList = shuffle(maleList);
+    femaleList = shuffle(femaleList);
+
+    // remove same name
+    maleList = maleList.filter(n => n !== inputName);
+    femaleList = femaleList.filter(n => n !== inputName);
+
     let matchName = "";
 
-    // ✅ male → female
+    // male → female
     if (maleList.includes(inputName)) {
       matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
     }
-    // ✅ female → male
+    // female → male
     else if (femaleList.includes(inputName)) {
       matchName = maleList[Math.floor(Math.random() * maleList.length)];
     }
-    // ✅ unknown → random female
+    // unknown → random female
     else {
       matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
     }
 
+    if (!matchName) {
+      matchName = "No match found 😢";
+    }
+
     const percent = Math.floor(Math.random() * 21) + 80;
+
+    // 🎨 color change
+    document.body.style.background =
+      color === "blue" ? "linear-gradient(to right,#89f7fe,#66a6ff)" :
+      color === "pink" ? "linear-gradient(to right,#ff9a9e,#fecfef)" :
+      "linear-gradient(to right,#ff9a9e,#fad0c4)";
 
     document.getElementById("result").innerHTML =
       `${inputName} ❤️ ${matchName} <br> Match: ${percent}%`;
+
+  } catch (e) {
+    document.getElementById("result").innerHTML =
+      "Error: " + e.message;
   }
+};
 </script>
 
 </body>
