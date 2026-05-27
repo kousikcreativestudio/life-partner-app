@@ -1,57 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Find Your Life Partner 😍</title>
+  <title>Find Your Life Partner ❤️</title>
+
   <style>
-    body { text-align:center; font-family:sans-serif; background:#ffe6f0; }
-    h1 { color:#ff3366; }
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      background:#ff3366;
-      color:white;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
+    body {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      font-family: Arial;
+      text-align: center;
+      padding-top: 100px;
     }
+
+    h1 {
+      color: #ff2e63;
+    }
+
+    input {
+      padding: 10px;
+      width: 220px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #ff2e63;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
     #result {
-      margin-top:20px;
-      font-size:30px;
-      color:#333;
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
+
 <body>
 
-<h1>💖 Find Your Life Partner 💖</h1>
+  <h1>💖 Find Your Life Partner 💖</h1>
 
-<button onclick="getPartner()">Find Now</button>
+  <!-- NAME INPUT -->
+  <input type="text" id="username" placeholder="Enter your name" /><br>
 
-<h2 id="result"></h2>
+  <!-- BUTTON -->
+  <button onclick="findPartner()">Find Now</button>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <!-- RESULT -->
+  <div id="result"></div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID"
-  };
+  <!-- FIREBASE + LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    const firebaseConfig = {
+      apiKey: "PASTE_YOUR_API_KEY",
+      authDomain: "life-partner-app.firebaseapp.com",
+      projectId: "life-partner-app",
+      storageBucket: "life-partner-app.appspot.com",
+      messagingSenderId: "376129371589",
+      appId: "PASTE_YOUR_APP_ID"
+    };
 
-  async function getPartner() {
-    const snapshot = await db.collection("users").get();
-    const users = snapshot.docs.map(doc => doc.data().name);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    const random = users[Math.floor(Math.random() * users.length)];
+    async function findPartner() {
+      const userName = document.getElementById("username").value;
 
-    document.getElementById("result").innerText = random;
-  }
-</script>
+      if (userName === "") {
+        document.getElementById("result").innerText = "Please enter your name";
+        return;
+      }
+
+      const querySnapshot = await getDocs(collection(db, "names"));
+
+      let names = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.name) {
+          names.push(data.name);
+        }
+      });
+
+      if (names.length === 0) {
+        document.getElementById("result").innerText = "No names found";
+        return;
+      }
+
+      const randomName = names[Math.floor(Math.random() * names.length)];
+
+      document.getElementById("result").innerText =
+        userName + " ❤️ " + randomName;
+    }
+
+    window.findPartner = findPartner;
+  </script>
 
 </body>
 </html>
