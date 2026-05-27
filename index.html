@@ -8,19 +8,18 @@
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       font-family: Arial;
       text-align: center;
-      padding-top: 100px;
+      padding-top: 80px;
     }
 
     h1 {
       color: #ff2e63;
     }
 
-    input {
+    input, select {
       padding: 10px;
-      width: 220px;
+      margin: 8px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      margin-bottom: 15px;
     }
 
     button {
@@ -35,9 +34,8 @@
 
     #result {
       margin-top: 20px;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: bold;
-      color: #333;
     }
   </style>
 </head>
@@ -46,16 +44,29 @@
 
   <h1>💖 Find Your Life Partner 💖</h1>
 
-  <!-- NAME INPUT -->
-  <input type="text" id="username" placeholder="Enter your name" /><br>
+  <!-- NAME -->
+  <input type="text" id="username" placeholder="Enter your name"><br>
 
-  <!-- BUTTON -->
+  <!-- GENDER -->
+  <select id="gender">
+    <option value="">Select Gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select><br>
+
+  <!-- COLOR -->
+  <select id="color">
+    <option value="">Select Favorite Color</option>
+    <option value="red">Red</option>
+    <option value="blue">Blue</option>
+    <option value="pink">Pink</option>
+    <option value="black">Black</option>
+  </select><br>
+
   <button onclick="findPartner()">Find Now</button>
 
-  <!-- RESULT -->
   <div id="result"></div>
 
-  <!-- FIREBASE + LOGIC -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -74,31 +85,45 @@
 
     async function findPartner() {
       const userName = document.getElementById("username").value;
+      const gender = document.getElementById("gender").value;
+      const color = document.getElementById("color").value;
 
-      if (userName === "") {
-        document.getElementById("result").innerText = "Please enter your name";
+      if (!userName || !gender || !color) {
+        document.getElementById("result").innerText =
+          "Please fill all fields!";
         return;
       }
 
       const querySnapshot = await getDocs(collection(db, "names"));
 
-      let names = [];
+      let maleNames = [];
+      let femaleNames = [];
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.name) {
-          names.push(data.name);
+        if (data.gender === "male") {
+          maleNames.push(data.name);
+        } else if (data.gender === "female") {
+          femaleNames.push(data.name);
         }
       });
 
-      if (names.length === 0) {
-        document.getElementById("result").innerText = "No names found";
-        return;
+      let partnerName = "";
+
+      if (gender === "male") {
+        partnerName = femaleNames[Math.floor(Math.random() * femaleNames.length)];
+      } else {
+        partnerName = maleNames[Math.floor(Math.random() * maleNames.length)];
       }
 
-      const randomName = names[Math.floor(Math.random() * names.length)];
+      // 💖 MATCH %
+      const match = Math.floor(Math.random() * 41) + 60;
 
-      document.getElementById("result").innerText =
-        userName + " ❤️ " + randomName;
+      // 🎉 FINAL OUTPUT
+      document.getElementById("result").innerHTML =
+        `<span style="color:#ff2e63">${userName}</span> ❤️ 
+         <span style="color:#ff2e63">${partnerName}</span><br>
+         💖 <b>${match}% Match</b> (${color})`;
     }
 
     window.findPartner = findPartner;
