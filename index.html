@@ -1,102 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Find Your Life Partner ❤️</title>
-  <style>
-    body {
-      text-align: center;
-      font-family: Arial;
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-    }
-
-    h1 {
-      margin-top: 50px;
-      color: #ff2e63;
-    }
-
-    input, select, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-    }
-
-    button {
-      background: #ff2e63;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-
-<body>
-
-<h1>💖 Find Your Life Partner 💖</h1>
-
-<input type="text" id="name" placeholder="Enter your name">
-
-<br>
-
-<select id="color">
-  <option value="red">Red ❤️</option>
-  <option value="blue">Blue 💙</option>
-  <option value="pink">Pink 💖</option>
-</select>
-
-<br>
-
-<button onclick="findMatch()">Find Now</button>
-
-<div id="result"></div>
-
 <script>
-  // 👇 Your database (you can later connect Firebase)
-  const maleNames = ["Arjun", "Sai", "Ramesh", "Akash", "Kousik"];
-  const femaleNames = ["Rama", "Priya", "Sita", "Anjali", "Keerthi"];
+async function findMatch() {
+  const inputName = document.getElementById("name").value.trim().toLowerCase();
+  const color = document.getElementById("color").value;
 
-  function findMatch() {
-    const name = document.getElementById("name").value.trim();
-    const color = document.getElementById("color").value;
+  const snapshot = await getDocs(collection(db, "names"));
 
-    if (name === "") {
-      alert("Enter your name");
-      return;
-    }
+  let maleList = [];
+  let femaleList = [];
 
-    let matchName;
+  snapshot.forEach(doc => {
+    const data = doc.data();
 
-    // 🔍 Detect gender
-    if (maleNames.map(n => n.toLowerCase()).includes(name.toLowerCase())) {
-      // male → female
-      matchName = femaleNames[Math.floor(Math.random() * femaleNames.length)];
-    } 
-    else if (femaleNames.map(n => n.toLowerCase()).includes(name.toLowerCase())) {
-      // female → male
-      matchName = maleNames[Math.floor(Math.random() * maleNames.length)];
-    } 
-    else {
-      // unknown → random female (default)
-      matchName = femaleNames[Math.floor(Math.random() * femaleNames.length)];
-    }
+    if (data.male) maleList.push(data.male.toLowerCase());
+    if (data.female) femaleList.push(data.female.toLowerCase());
+  });
 
-    const percent = Math.floor(Math.random() * 21) + 80;
+  let matchName = "";
 
-    // 🎨 color effect
-    document.body.style.background =
-      color === "blue" ? "linear-gradient(to right, #89f7fe, #66a6ff)" :
-      color === "pink" ? "linear-gradient(to right, #ff9a9e, #fecfef)" :
-      "linear-gradient(to right, #ff9a9e, #fad0c4)";
-
-    document.getElementById("result").innerHTML =
-      `${name} ❤️ ${matchName} <br> Match: ${percent}%`;
+  // ✅ IF USER IS MALE → SHOW FEMALE
+  if (maleList.includes(inputName)) {
+    matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
   }
-</script>
+  // ✅ IF USER IS FEMALE → SHOW MALE
+  else if (femaleList.includes(inputName)) {
+    matchName = maleList[Math.floor(Math.random() * maleList.length)];
+  }
+  // ❗ IF NOT FOUND → RANDOM FEMALE
+  else {
+    matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
+  }
 
-</body>
-</html>
+  const percent = Math.floor(Math.random() * 21) + 80;
+
+  document.getElementById("result").innerHTML =
+    `${inputName} ❤️ ${matchName} <br> Match: ${percent}%`;
+}
+</script>
