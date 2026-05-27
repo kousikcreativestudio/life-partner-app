@@ -1,38 +1,109 @@
-<script>
-async function findMatch() {
-  const inputName = document.getElementById("name").value.trim().toLowerCase();
-  const color = document.getElementById("color").value;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Love Match</title>
 
-  const snapshot = await getDocs(collection(db, "names"));
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f8c8c8;
+      padding: 50px;
+    }
 
-  let maleList = [];
-  let femaleList = [];
+    input, select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
+    button {
+      background: #ff4d6d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
 
-    if (data.male) maleList.push(data.male.toLowerCase());
-    if (data.female) femaleList.push(data.female.toLowerCase());
-  });
+<body>
 
-  let matchName = "";
+<h1>❤️ Find Your Life Partner ❤️</h1>
 
-  // ✅ IF USER IS MALE → SHOW FEMALE
-  if (maleList.includes(inputName)) {
-    matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
+<input id="name" placeholder="Enter your name"><br>
+
+<select id="color">
+  <option value="red">Red</option>
+  <option value="blue">Blue</option>
+  <option value="green">Green</option>
+</select><br>
+
+<button onclick="findMatch()">Find Now</button>
+
+<h2 id="result"></h2>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // ✅ YOUR CONFIG (already correct)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDWwfWTbb4b33KrLqxee3mxrM8lcFTycbQ",
+    authDomain: "life-partner-app.firebaseapp.com",
+    projectId: "life-partner-app",
+    storageBucket: "life-partner-app.firebasestorage.app",
+    messagingSenderId: "376129371589",
+    appId: "1:376129371589:web:25e4c2acf9677678c8dfac",
+    measurementId: "G-YCTBK9Z5ZH"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 🔥 MAIN FUNCTION
+  window.findMatch = async function () {
+
+    const inputName = document.getElementById("name").value.trim().toLowerCase();
+
+    if (!inputName) {
+      alert("Enter name first");
+      return;
+    }
+
+    const snapshot = await getDocs(collection(db, "names"));
+
+    let maleList = [];
+    let femaleList = [];
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      if (data.male) maleList.push(data.male.toLowerCase());
+      if (data.female) femaleList.push(data.female.toLowerCase());
+    });
+
+    let matchName = "";
+
+    // ✅ male → female
+    if (maleList.includes(inputName)) {
+      matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
+    }
+    // ✅ female → male
+    else if (femaleList.includes(inputName)) {
+      matchName = maleList[Math.floor(Math.random() * maleList.length)];
+    }
+    // ✅ unknown → random female
+    else {
+      matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
+    }
+
+    const percent = Math.floor(Math.random() * 21) + 80;
+
+    document.getElementById("result").innerHTML =
+      `${inputName} ❤️ ${matchName} <br> Match: ${percent}%`;
   }
-  // ✅ IF USER IS FEMALE → SHOW MALE
-  else if (femaleList.includes(inputName)) {
-    matchName = maleList[Math.floor(Math.random() * maleList.length)];
-  }
-  // ❗ IF NOT FOUND → RANDOM FEMALE
-  else {
-    matchName = femaleList[Math.floor(Math.random() * femaleList.length)];
-  }
-
-  const percent = Math.floor(Math.random() * 21) + 80;
-
-  document.getElementById("result").innerHTML =
-    `${inputName} ❤️ ${matchName} <br> Match: ${percent}%`;
-}
 </script>
+
+</body>
+</html>
