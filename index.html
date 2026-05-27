@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Find Your Life Partner 😍</title>
+  <style>
+    body { text-align:center; font-family:sans-serif; background:#ffe6f0; }
+    h1 { color:#ff3366; }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background:#ff3366;
+      color:white;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    #result {
+      margin-top:20px;
+      font-size:30px;
+      color:#333;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💖 Find Your Life Partner 💖</h1>
+
+<button onclick="getPartner()">Find Now</button>
+
+<h2 id="result"></h2>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  async function getPartner() {
+    const snapshot = await db.collection("users").get();
+    const users = snapshot.docs.map(doc => doc.data().name);
+
+    const random = users[Math.floor(Math.random() * users.length)];
+
+    document.getElementById("result").innerText = random;
+  }
+</script>
+
+</body>
+</html>
