@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Panel</title></head>
+<body>
+<h2>Admin Panel</h2>
+<button onclick="loadData()">Show Searches</button>
+<ul id="list"></ul>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function loadData() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  db.ref("searches").once("value", snapshot => {
+    const data = snapshot.val();
+    if (!data) {
+      list.innerHTML = "<li>No data found</li>";
+      return;
+    }
+    Object.values(data).forEach(item => {
+      const li = document.createElement("li");
+      li.innerText = item.name1 + " ❤️ " + item.name2 + " = " + item.result + " (" + item.time + ")";
+      list.appendChild(li);
+    });
+  });
+}
+</script>
+</body>
+</html>
