@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Free Custom Map</title>
+  <title>My Custom Location Map</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -20,21 +20,31 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-  var map = L.map('map').setView([16.3067, 80.4365], 15);
+  // ⭐ STEP 1: PUT YOUR LOCATION HERE
+  // Replace these values with your exact coordinates
+  var lat = 14.478851;   // <-- change if needed
+  var lng = 78.825029;   // <-- change if needed
 
+  // ⭐ STEP 2: CREATE MAP
+  var map = L.map('map').setView([lat, lng], 16);
+
+  // ⭐ STEP 3: ADD OPENSTREETMAP TILE
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
+  // ⭐ STEP 4: CUSTOM MARKER ICON
   var customIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+    iconUrl: 'https://i.ibb.co/fztWJFdH/Chat-GPT-Image-Jun-13-2026-11-42-53-AM.png',
     iconSize: [60, 60]
   });
 
-  L.marker([16.3067, 80.4365], { icon: customIcon })
+  // ⭐ STEP 5: ADD MARKER
+  L.marker([lat, lng], { icon: customIcon })
     .addTo(map)
-    .bindPopup("My Custom Location")
+    .bindPopup("📍 My Location")
     .openPopup();
+
 </script>
 
 </body>
